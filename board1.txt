@@ -1,0 +1,235 @@
+import React, { useState } from 'react';
+import { Button, Table, Form, Alert } from 'react-bootstrap';
+
+const FruitBoard = () => {
+
+    // 과일 리스트 상태 관리
+    const [fruitList, setFruitList] = useState([
+        { no: "1", title: '사과는 언제 배송이 되나요?', description: '어제부터 기다렸는데 아직 배송이 안됐어요.', viewCount: 1 },
+        { no: "2", title: '수박크기가 작아요', description: '수박이 맛있고 달았습니다. 하지만 수박크기는 많이 작았어요. ', viewCount: 2 },
+        { no: "3", title: '오렌지 당도가 낮아요', description: '당도가 11birx이상은 아닌것같아요.', viewCount: 1 },
+        { no: "4", title: '딸기향이 이상해요', description: '딸기에서 흙냄새가 납니다.', viewCount: 1 }
+    ]);
+
+    // UI 상태들
+    const [listOk, setListOk] = useState(true);
+    const [readOk, setReadOk] = useState(false);
+    const [writeOk, setWriteOk] = useState(false);
+    const [editOk, setEditOk] = useState(false);
+    const [fruitInfo, setFruitInfo] = useState({});
+
+    // 작성 폼 상태들
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    // 수정 상태들 추가
+    const [editNo, setEditNo] = useState(null); // 수정할 과일 번호
+    const [editTitle, setEditTitle] = useState('');
+    const [editDescription, setEditDescription] = useState('');
+
+    // 오류 메시지 상태
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // 게시글 목록 보기
+    const fruitListView = () => {
+        setReadOk(false);
+        setWriteOk(false);
+        setEditOk(false);
+        setListOk(true);
+    };
+
+    // 게시글 읽기
+    const fruitRead = (item) => {
+        setListOk(false);
+        setReadOk(true);
+        
+        // 조회수 증가
+        const updatedList = fruitList.map(f =>
+            f.no === item.no ? { ...f, viewCount: f.viewCount + 1 } : f
+        );
+        setFruitList(updatedList);
+        
+        setFruitInfo(item);
+    };
+
+    // 게시글 작성 폼 열기
+    const fruitWrite = () => {
+        setListOk(false);
+        setWriteOk(true);
+    };
+
+    // 새 글 저장
+    const fruitSave = () => {
+        // 제목과 설명이 비어있으면 유효성 검사
+        if (title.trim() === '' || description.trim() === '') {
+            setErrorMessage('제목과 내용을 모두 입력해주세요!');
+            return;
+        }
+        
+        // 새 글 추가
+        const newFruit = {
+            no: (fruitList.length + 1).toString(),
+            title: title,
+            description: description,
+            viewCount: 0 // 초기 조회수는 0
+        };
+        setFruitList([...fruitList, newFruit]);
+        setTitle('');
+        setDescription('');
+        setErrorMessage(''); // 오류 메시지 초기화
+        fruitListView();
+    };
+
+    // 게시글 삭제
+const fruitDelete = (no) => {
+    // 삭제할 게시글을 `no` 값으로 필터링하여 삭제
+    const updatedList = fruitList.filter(item => item.no !== no.toString());  // no.toString()으로 비교
+    setFruitList(updatedList);
+};
+
+
+    // 게시글 수정 폼 열기
+    const fruitEdit = (item) => {
+        setEditOk(true);
+        setListOk(false);
+        setEditNo(item.no);
+        setEditTitle(item.title);
+        setEditDescription(item.description);
+    };
+
+    // 수정된 게시글 저장
+    const updateFruit = () => {
+        const updatedFruitList = fruitList.map(f =>
+            f.no === editNo ? { ...f, title: editTitle, description: editDescription } : f
+        );
+        setFruitList(updatedFruitList);
+        fruitListView();
+    };
+
+    return (
+        <div className="container" style={{ marginTop: "80px" }}>
+
+            <h3>과일농장 게시판</h3>
+
+            {/* 과일 목록 보기 */}
+            {listOk && (
+                <div style={{ marginTop: "30px" }}>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>제목</th>
+                                <th>문의글</th>
+                                <th>조회수</th>
+                                <th>문의하기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fruitList.slice().reverse().map(item => (
+                                <tr key={item.no}>
+                                    <td>{item.no}</td>
+                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => fruitRead(item)}>
+                                        {item.title}
+                                    </td>
+                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => fruitRead(item)}>
+                                        {item.description}
+                                    </td>
+                                    <td>{item.viewCount}</td> {/* 조회수 표시 */}
+                                    <td>
+                                        <Button variant="outline-primary" onClick={() => fruitRead(item)}>
+                                            게시글읽기
+                                        </Button>
+                                        <Button variant="outline-success" onClick={() => fruitEdit(item)} style={{ marginLeft: "10px" }}>수정</Button>
+                                        <Button variant="outline-danger" onClick={() => fruitDelete(item.no)} style={{ marginLeft: "10px" }}>
+    삭제
+</Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                    <Button variant="primary" onClick={fruitWrite} style={{ float: 'right' }}>
+                       문의글 작성하기
+                    </Button>
+                </div>
+            )}
+
+            {/* 게시글 읽기 */}
+            {readOk && (
+                <div>
+                    <h3>{fruitInfo.title}</h3>
+                    <hr></hr>
+                    <p>{fruitInfo.description}</p>
+                    <Button variant="secondary" onClick={fruitListView}>
+                        목록으로
+                    </Button>
+                </div>
+            )}
+
+            {/* 새 글 작성 폼 */}
+            {writeOk && (
+                <div style={{ marginTop: "30px" }}>
+                    <h5>과일농장에게 문의글 남기기</h5>
+
+                    {/* 오류 메시지 표시 */}
+                    {errorMessage && (
+                        <Alert variant="danger">{errorMessage}</Alert>
+                    )}
+
+                    <Form.Group controlId="formName">
+                        <Form.Control
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="과일명을 입력하세요"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="formDescription" style={{ marginTop: "30px" }}>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="과일에 대해 설명하세요"
+                        />
+                    </Form.Group>
+                    <div style={{ marginTop: "30px" }}>
+                        <Button variant="primary" onClick={fruitSave} style={{ marginRight: "10px" }}>저장</Button>
+                        <Button variant="secondary" onClick={fruitListView}>목록으로</Button>
+                    </div>
+                </div>
+            )}
+
+            {/* 과일 수정 폼 */}
+            {editOk && (
+                <div style={{ marginTop: "30px" }}>
+                    <h5>과일 수정</h5>
+                    <Form.Group controlId="formEditName">
+                        <Form.Control
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            placeholder="수정된 제목"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="formEditDescription">
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                            placeholder="수정된 설명"
+                        />
+                    </Form.Group>
+                    <div style={{ textAlign: 'right' }}>
+                        <Button variant="outline-success" onClick={updateFruit} style={{ marginRight: "10px" }}>수정</Button>
+                        <Button variant="outline-info" onClick={fruitListView}>목록으로</Button>
+                    </div>
+                </div>
+            )}
+
+        </div>
+    );
+};
+
+export default FruitBoard;
