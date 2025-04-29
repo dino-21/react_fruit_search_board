@@ -81,7 +81,7 @@ const FruitBoard = () => {
         setTitle('');
         setDescription('');
         setErrorMessage(''); // 오류 메시지 초기화
-        boardListView();
+        boardListView();  // 새글 저장후 게시글 목록 함수 호출
     };
 
     // 게시글 삭제
@@ -131,22 +131,22 @@ const FruitBoard = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {boardList.slice().reverse().map(item => (
-                                <tr key={item.no}>
-                                    <td>{item.no}</td>
-                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => boardRead(item.no)}>
-                                        {item.title}
+                            {boardList.slice().reverse().map(board => (
+                                <tr key={board.no}>
+                                    <td>{board.no}</td>
+                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => boardRead(board.no)}>
+                                        {board.title}
                                     </td>
-                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => boardRead(item.no)}>
-                                        {item.description}
+                                    <td style={{ cursor: 'pointer',  textAlign: 'left' }} onClick={() => boardRead(board.no)}>
+                                        {board.description}
                                     </td>
-                                    <td>{item.viewCount}</td> {/* 조회수 표시 */}
+                                    <td>{board.viewCount}</td> {/* 조회수 표시 */}
                                     <td>
-                                        <Button variant="outline-primary" onClick={() => boardRead(item.no)}>
+                                        <Button variant="outline-primary" onClick={() => boardRead(board.no)}>
                                             게시글읽기
                                         </Button>
-                                        <Button variant="outline-success" onClick={() => boardEdit(item.no)} style={{ marginLeft: "10px" }}>수정</Button>
-                                        <Button variant="outline-danger" onClick={() => boardDelete(item.no)} style={{ marginLeft: "10px" }}>
+                                        <Button variant="outline-success" onClick={() => boardEdit(board.no)} style={{ marginLeft: "10px" }}>수정</Button>
+                                        <Button variant="outline-danger" onClick={() => boardDelete(board.no)} style={{ marginLeft: "10px" }}>
                                             삭제
                                         </Button>
                                     </td>
