@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button, Table, Form, Alert } from 'react-bootstrap';
 
@@ -31,6 +32,7 @@ const FruitBoard = () => {
     // 오류 메시지 상태
     const [errorMessage, setErrorMessage] = useState('');
 
+
     // 게시글 목록 보기
     const boardListView = () => {
         setReadOk(false);
@@ -46,14 +48,14 @@ const FruitBoard = () => {
         setEditOk(false);
         setReadOk(true);
         
-        // 조회수 증가
+        // 조회수 증가, 클릭한 게시물이면 1증감 
         const updatedList = boardList.map(b =>
             b.no === no ? { ...b, viewCount: b.viewCount + 1 } : b
         );
-        setBoardList(updatedList);
+        setBoardList(updatedList); //조회수 1 증가해서 다시 렌더링
         
-        const selectedBoard = boardList.find(b => b.no === no);
-        setBoardInfo(selectedBoard);
+        const selectedBoard = boardList.find(b => b.no === no); // 클릭한 게시물 번호를 찾아
+        setBoardInfo(selectedBoard); // 현재 읽고 있는 게시글의 정보를 저장해서 화면에 렌더링
     };
 
     // 게시글 작성 폼 열기
@@ -81,14 +83,14 @@ const FruitBoard = () => {
         setTitle('');
         setDescription('');
         setErrorMessage(''); // 오류 메시지 초기화
-        boardListView();  // 새글 저장후 게시글 목록 함수 호출
+        boardListView(); // 새글 저장후 게시글 목록 함수 호출
     };
 
     // 게시글 삭제
     const boardDelete = (no) => {
         // 삭제할 게시글을 `no` 값으로 필터링하여 삭제
         const updatedList = boardList.filter(b => b.no !== no.toString());  // no.toString()으로 비교
-        setBoardList(updatedList);
+        setBoardList(updatedList); 
         boardListView(); // 삭제 후 목록 보기로 이동
     };
 
@@ -97,19 +99,25 @@ const FruitBoard = () => {
         setEditOk(true);
         setListOk(false);
         
-        const boardToEdit = boardList.find(b => b.no === no);
-        setEditNo(boardToEdit.no);
-        setEditTitle(boardToEdit.title);
-        setEditDescription(boardToEdit.description);
+        const boardToEdit = boardList.find(b => b.no === no);  // 클릭한 번호를 찾아 객체의 데이터(게시글제목, 내용) 가져와서
+        setEditNo(boardToEdit.no);   // 데이터의 번호
+        setEditTitle(boardToEdit.title);  // 데이터의 제목
+        setEditDescription(boardToEdit.description);  // 데이터의 내용을 폼태그에 채워넣는다.
     };
+
+
+
+
+
+
 
     // 수정된 게시글 저장
     const updateBoard = () => {
-        const updatedBoardList = boardList.map(b =>
+        const updatedBoardList = boardList.map(b =>  // 게시물에서 수정된 번호를 찾아 게시글제목과 설명을 저장
             b.no === editNo ? { ...b, title: editTitle, description: editDescription } : b
         );
-        setBoardList(updatedBoardList);
-        boardListView();
+        setBoardList(updatedBoardList);   // 게시물 목록을 업데이트
+        boardListView();  // 수정 후 목록 보기로 이동
     };
 
     return (
@@ -175,6 +183,13 @@ const FruitBoard = () => {
                 </div>
             )}
 
+
+
+
+
+
+
+
             {/* 새 글 작성 폼 */}
             {writeOk && (
                 <div style={{ marginTop: "30px" }}>
@@ -209,6 +224,10 @@ const FruitBoard = () => {
                     </div>
                 </div>
             )}
+
+
+
+
 
             {/* 과일 수정 폼 */}
             {editOk && (
