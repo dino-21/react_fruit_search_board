@@ -87,7 +87,7 @@ const FruitBoard = () => {
     // 게시글 삭제
     const boardDelete = (no) => {
         // 삭제할 게시글을 `no` 값으로 필터링하여 삭제
-        const updatedList = boardList.filter(item => item.no !== no.toString());  // no.toString()으로 비교
+        const updatedList = boardList.filter(b => b.no !== no.toString());  // no.toString()으로 비교
         setBoardList(updatedList);
         boardListView(); // 삭제 후 목록 보기로 이동
     };
